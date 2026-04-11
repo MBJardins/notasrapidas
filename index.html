@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrada rápida • Contas a pagar</title>
+  <style>
+    :root{
+      --bg:#f4f1fb;
+      --card:#ffffff;
+      --line:#e6def7;
+      --text:#241f35;
+      --muted:#6f6687;
+      --purple:#6d3df2;
+      --purple-dark:#5a2fe0;
+      --green:#16a34a;
+      --green-dark:#15803d;
+      --red:#dc2626;
+      --gray:#eef1f6;
+      --shadow:0 10px 30px rgba(27, 18, 64, 0.08);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .page{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .shell{
+      width:100%;
+      max-width:560px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card-header{
+      padding:22px 22px 16px 22px;
+      border-bottom:1px solid var(--line);
+    }
+    .card-header h1{
+      margin:0 0 6px 0;
+      font-size:28px;
+      color:#2d2150;
+    }
+    .card-header p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:14px;
+    }
+    .card-body{
+      padding:22px;
+      display:grid;
+      gap:14px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .field label{
+      font-size:13px;
+      font-weight:700;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.03em;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    input[type="date"],
+    input[type="file"],
+    select,
+    textarea{
+      width:100%;
+      border:1px solid #d8d7e5;
+      border-radius:12px;
+      padding:13px 14px;
+      font-size:15px;
+      background:#fff;
+      outline:none;
+    }
+    textarea{
+      min-height:110px;
+      resize:vertical;
+    }
+    input[readonly]{
+      background:#f8f6ff;
+      color:#43386a;
+      font-weight:700;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color:var(--purple);
+      box-shadow:0 0 0 3px rgba(109,61,242,0.13);
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+    .checkbox-box{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background:#faf9fe;
+      border:1px solid #e6e1f8;
+      border-radius:12px;
+      padding:12px 14px;
+    }
+    .checkbox-box input{
+      width:20px;height:20px;
+      accent-color:var(--purple);
+      flex:0 0 auto;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    button{
+      appearance:none;
+      border:0;
+      border-radius:12px;
+      padding:14px 16px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .btn-primary{ background:var(--purple); color:#fff; }
+    .btn-primary:hover{ background:var(--purple-dark); }
+    .btn-green{ background:var(--green); color:#fff; }
+    .btn-green:hover{ background:var(--green-dark); }
+    .btn-gray{ background:var(--gray); color:#293142; }
+    button:disabled{ opacity:.6; cursor:not-allowed; }
+    .full{ width:100%; }
+    .status{
+      font-size:14px;
+      font-weight:700;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .success{
+      color:#166534;
+      background:#eefaf2;
+      border:1px solid #c8ecd5;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      line-height:1.55;
+    }
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:14px 18px;
+      border-bottom:1px solid var(--line);
+      background:#faf8ff;
+    }
+    .userbox{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+    .userbox strong{
+      font-size:14px;
+      color:#2c2250;
+    }
+    .userbox span{
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .file-info{
+      font-size:13px;
+      color:var(--muted);
+    }
+    .footer-note{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .hidden{ display:none !important; }
+    .center-logo{
+      width:54px;
+      height:54px;
+      border-radius:16px;
+      background:#efe8ff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      margin-bottom:8px;
+    }
+    @media (max-width: 680px){
+      .grid-2{ grid-template-columns:1fr; }
+      .actions{ flex-direction:column; }
+      button{ width:100%; }
+      .card-header h1{ font-size:24px; }
+      .topbar{ flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page" id="loginPage">
+    <div class="shell">
+      <section class="card">
+        <div class="card-header">
+          <div class="center-logo">🔐</div>
+          <h1>Acesso</h1>
+          <p>Entre uma vez e o sistema mantém a sessão salva neste aparelho para deixar a tela de lançamento mais limpa e rápida.</p>
+        </div>
+
+        <div class="card-body">
+          <div class="field">
+            <label for="loginTelefone">Telefone</label>
+            <input id="loginTelefone" type="text" placeholder="Ex.: 5511999999999" />
+          </div>
+
+          <div class="field">
+            <label for="loginPin">PIN</label>
+            <input id="loginPin" type="password" inputmode="numeric" placeholder="Digite seu PIN" />
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary full" id="btnLogin" type="button">Entrar</button>
+          </div>
+
+          <div class="status" id="loginStatus">Digite seu telefone e PIN para acessar.</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="page hidden" id="appPage">
+    <div class="shell">
+      <section class="card">
+        <div class="topbar">
+          <div class="userbox">
+            <strong id="usuarioNomeTopo">Usuário</strong>
+            <span id="usuarioResumoTopo">—</span>
+          </div>
+          <button class="btn-gray" id="btnLogout" type="button">Sair</button>
+        </div>
+
+        <div class="card-header">
+          <h1>Lançamento rápido</h1>
+          <p>Preencha só o essencial para registrar um novo lançamento. Você pode enviar com nota ou, na falta dela, informar o valor da despesa.</p>
+        </div>
+
+        <div class="card-body">
+          <div class="grid-2">
+            <div class="field">
+              <label for="dataPagamento">Data de pagamento</label>
+              <input id="dataPagamento" type="date" />
+            </div>
+
+            <div class="field">
+              <label for="formaPagamento">Forma de pagamento</label>
+              <select id="formaPagamento">
+                <option value="">Carregando...</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="tipoDocumentoInformado">Tipo informado</label>
+              <input id="tipoDocumentoInformado" type="text" value="Nota" readonly />
+            </div>
+
+            <div class="field">
+              <label for="valorDespesa">Valor da despesa</label>
+              <input id="valorDespesa" type="number" step="0.01" min="0" placeholder="Ex.: 150.00" />
+            </div>
+
+            <div class="field hidden">
+              <label for="contaIdSelecionada">Conta ID</label>
+              <input id="contaIdSelecionada" type="text" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" placeholder="Ex.: compra de material de limpeza para uso na escola"></textarea>
+          </div>
+
+          <div class="checkbox-box">
+            <input type="checkbox" id="ehServico">
+            <span>É serviço</span>
+          </div>
+
+          <div class="field">
+            <label for="arquivo">Anexar nota</label>
+            <input id="arquivo" type="file" accept="image/*,.pdf,application/pdf" capture="environment" />
+            <div class="file-info" id="arquivoInfo">Nenhum arquivo selecionado.</div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-green full" id="btnEnviar" type="button">Enviar lançamento</button>
+          </div>
+
+          <div class="status" id="envioStatus">Preencha e envie.</div>
+          <div class="success hidden" id="successBox"></div>
+
+          <div class="footer-note">
+            Este formulário foi simplificado para um novo lançamento.
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+const CONFIG = {
+  VALIDAR_USUARIO_URL: "https://webhook.maplebearjardins.pro/webhook/c1a644bf-3126-414d-9406-a5e587d277ad",
+  ENTRADA_RAPIDA_URL: "https://webhook.maplebearjardins.pro/webhook/b2a54515-1c96-4609-b558-84129b287fc2",
+  CONTAS_URL: "https://webhook.maplebearjardins.pro/webhook/9175da7b-b69a-4027-b1d7-8264779c0e41",
+  EMPRESA_CONTEXTO: "Maple Bear Jardins",
+  CANAL: "site_rapido"
+};
+
+const STORAGE_KEY = "cp_usuario_logado_v2";
+
+const els = {
+  loginPage: document.getElementById("loginPage"),
+  appPage: document.getElementById("appPage"),
+
+  loginTelefone: document.getElementById("loginTelefone"),
+  loginPin: document.getElementById("loginPin"),
+  btnLogin: document.getElementById("btnLogin"),
+  loginStatus: document.getElementById("loginStatus"),
+
+  usuarioNomeTopo: document.getElementById("usuarioNomeTopo"),
+  usuarioResumoTopo: document.getElementById("usuarioResumoTopo"),
+  btnLogout: document.getElementById("btnLogout"),
+
+  dataPagamento: document.getElementById("dataPagamento"),
+  formaPagamento: document.getElementById("formaPagamento"),
+  tipoDocumentoInformado: document.getElementById("tipoDocumentoInformado"),
+  valorDespesa: document.getElementById("valorDespesa"),
+  contaIdSelecionada: document.getElementById("contaIdSelecionada"),
+  descricao: document.getElementById("descricao"),
+  ehServico: document.getElementById("ehServico"),
+  arquivo: document.getElementById("arquivo"),
+  arquivoInfo: document.getElementById("arquivoInfo"),
+
+  btnEnviar: document.getElementById("btnEnviar"),
+  envioStatus: document.getElementById("envioStatus"),
+  successBox: document.getElementById("successBox")
+};
+
+let usuarioLogado = null;
+let contasCache = [];
+
+function gerarSessionId() {
+  const now = new Date();
+  const rand = Math.random().toString(36).slice(2, 10).toUpperCase();
+  return `ENTRADA_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${rand}`;
+}
+
+function hojeISO() {
+  const d = new Date();
+  const tzOffset = d.getTimezoneOffset() * 60000;
+  return new Date(d - tzOffset).toISOString().slice(0,10);
+}
+
+function normalizarTelefone(v) {
+  return String(v || "").replace(/\D/g, "");
+}
+
+function normalizarFormaPagamentoConta(conta) {
+  const tipo = String(conta?.tipo || "").toLowerCase().trim();
+  const tipoInstrumento = String(conta?.tipo_instrumento || "").toLowerCase().trim();
+  const categoriaUso = String(conta?.categoria_uso || "").toLowerCase().trim();
+  const label = String(conta?.label || "").toLowerCase().trim();
+
+  if (label.includes("pix")) return "pix";
+  if (tipoInstrumento.includes("credito")) return "credito";
+  if (tipoInstrumento.includes("debito")) return "debito";
+
+  if (tipo === "cartao_credito") return "credito";
+  if (tipo === "cartao_debito") return "debito";
+
+  if (categoriaUso === "cartao") {
+    if (label.includes("debito")) return "debito";
+    return "credito";
+  }
+
+  if (tipo === "conta_corrente") return "transferencia";
+  if (tipo === "conta_poupanca") return "transferencia";
+  if (tipo === "caixa") return "dinheiro";
+  if (tipo === "carteira_digital") return "transferencia";
+
+  if (categoriaUso === "banco") return "transferencia";
+  if (label.includes("boleto")) return "boleto";
+  if (label.includes("dinheiro")) return "dinheiro";
+  if (label.includes("cash")) return "dinheiro";
+  if (label.includes("transfer")) return "transferencia";
+  if (label.includes("ted")) return "transferencia";
+  if (label.includes("doc")) return "transferencia";
+  if (label.includes("cartao")) return "credito";
+  if (label.includes("crédito")) return "credito";
+  if (label.includes("débito")) return "debito";
+
+  return "transferencia";
+}
+
+function parseValorDespesa(v) {
+  if (v === undefined || v === null) return null;
+  const s = String(v).trim().replace(',', '.');
+  if (!s) return null;
+  const n = Number(s);
+  return Number.isFinite(n) && n > 0 ? Number(n.toFixed(2)) : null;
+}
+
+function atualizarTipoDocumentoInformado() {
+  const temArquivo = !!(els.arquivo.files && els.arquivo.files[0]);
+  els.tipoDocumentoInformado.value = temArquivo ? "Nota" : "Sem nota";
+}
+
+function showLogin() {
+  els.loginPage.classList.remove("hidden");
+  els.appPage.classList.add("hidden");
+}
+
+function showApp() {
+  els.loginPage.classList.add("hidden");
+  els.appPage.classList.remove("hidden");
+}
+
+function atualizarTopoUsuario() {
+  const nome = usuarioLogado?.nome_usuario || usuarioLogado?.nome || "Usuário";
+  const telefone = usuarioLogado?.telefone_norm || usuarioLogado?.telefone_usuario_norm || usuarioLogado?.telefone || "—";
+  const perfil = usuarioLogado?.perfil || usuarioLogado?.perfil_id || "";
+  els.usuarioNomeTopo.textContent = nome;
+  els.usuarioResumoTopo.textContent = perfil ? `${telefone} • ${perfil}` : telefone;
+}
+
+function salvarSessao() {
+  if (usuarioLogado) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(usuarioLogado));
+  }
+}
+
+function carregarSessao() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    usuarioLogado = JSON.parse(raw);
+    atualizarTopoUsuario();
+    showApp();
+    return true;
+  } catch (e) {
+    localStorage.removeItem(STORAGE_KEY);
+    return false;
+  }
+}
+
+function limparSessao() {
+  usuarioLogado = null;
+  localStorage.removeItem(STORAGE_KEY);
+  showLogin();
+  els.loginTelefone.value = "";
+  els.loginPin.value = "";
+  els.loginStatus.textContent = "Digite seu telefone e PIN para acessar.";
+}
+
+function preencherContasNoSelect(contas) {
+  contasCache = Array.isArray(contas) ? contas : [];
+  els.formaPagamento.innerHTML = "";
+
+  if (!contasCache.length) {
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = "Nenhuma opção encontrada";
+    els.formaPagamento.appendChild(opt);
+    els.contaIdSelecionada.value = "";
+    return;
+  }
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "Selecione";
+  els.formaPagamento.appendChild(placeholder);
+
+  contasCache.forEach((conta) => {
+    const opt = document.createElement("option");
+    const label = conta.label || conta.apelido || conta.instituicao || "Sem descrição";
+    const formaNormalizada = normalizarFormaPagamentoConta(conta);
+
+    opt.value = label;
+    opt.textContent = label;
+    opt.dataset.contaId = conta.id || "";
+    opt.dataset.label = label;
+    opt.dataset.tipo = conta.tipo || "";
+    opt.dataset.tipoInstrumento = conta.tipo_instrumento || "";
+    opt.dataset.categoriaUso = conta.categoria_uso || "";
+    opt.dataset.formaNormalizada = formaNormalizada;
+
+    els.formaPagamento.appendChild(opt);
+  });
+
+  els.formaPagamento.value = "";
+  els.contaIdSelecionada.value = "";
+}
+
+async function carregarContas() {
+  els.formaPagamento.innerHTML = '<option value="">Carregando...</option>';
+
+  try {
+    const response = await fetch(CONFIG.CONTAS_URL, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        origem: "load_combos_inicial",
+        session_id: "",
+        telefone_usuario: usuarioLogado?.telefone_usuario_norm || usuarioLogado?.telefone_norm || "",
+        empresa_contexto: CONFIG.EMPRESA_CONTEXTO,
+        origem_entrada: CONFIG.CANAL
+      })
+    });
+
+    const rawText = await response.text();
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (e) {
+      throw new Error("A resposta do webhook não veio em JSON válido.");
+    }
+
+    if (!response.ok || data.ok === false) {
+      throw new Error(data.message || data.error || `Falha HTTP ${response.status}`);
+    }
+
+    preencherContasNoSelect(Array.isArray(data.contas) ? data.contas : []);
+  } catch (error) {
+    console.error(error);
+    els.formaPagamento.innerHTML = '<option value="">Erro ao carregar opções</option>';
+    els.contaIdSelecionada.value = "";
+  }
+}
+
+function resetFormulario({ manterMensagem = false } = {}) {
+  els.descricao.value = "";
+  els.dataPagamento.value = hojeISO();
+  els.formaPagamento.value = "";
+  els.contaIdSelecionada.value = "";
+  els.valorDespesa.value = "";
+  els.tipoDocumentoInformado.value = "Sem nota";
+  els.ehServico.checked = false;
+  els.arquivo.value = "";
+  els.arquivoInfo.textContent = "Nenhum arquivo selecionado.";
+  els.envioStatus.textContent = "Preencha e envie.";
+
+  if (!manterMensagem) {
+    els.successBox.classList.add("hidden");
+    els.successBox.textContent = "";
+  }
+}
+
+async function validarUsuario() {
+  const telefone = normalizarTelefone(els.loginTelefone.value);
+  const pin = String(els.loginPin.value || "").trim();
+
+  if (!telefone || !pin) {
+    alert("Preencha telefone e PIN.");
+    return;
+  }
+
+  els.btnLogin.disabled = true;
+  els.loginStatus.textContent = "Validando acesso...";
+
+  try {
+    const response = await fetch(CONFIG.VALIDAR_USUARIO_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        telefone_usuario: telefone,
+        senha: pin,
+        pin: pin,
+        canal: CONFIG.CANAL
+      })
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.ok === false) {
+      throw new Error(data.message || data.error || `Falha HTTP ${response.status}`);
+    }
+
+    usuarioLogado = {
+      id: data.id || "",
+      user_id: data.user_id || data.id || "",
+      nome_usuario: data.nome_usuario || data.nome || "",
+      telefone_norm: data.telefone_norm || data.telefone_usuario_norm || telefone,
+      telefone_usuario_norm: data.telefone_usuario_norm || data.telefone_norm || telefone,
+      perfil: data.perfil || data.perfil_id || ""
+    };
+
+    salvarSessao();
+    atualizarTopoUsuario();
+    resetFormulario();
+    showApp();
+    await carregarContas();
+  } catch (error) {
+    alert("Falha ao validar o acesso.\n\nDetalhe: " + (error.message || error));
+    els.loginStatus.textContent = "Não foi possível validar o acesso.";
+  } finally {
+    els.btnLogin.disabled = false;
+  }
+}
+
+els.arquivo.addEventListener("change", function() {
+  const file = this.files && this.files[0];
+  els.arquivoInfo.textContent = file ? `Arquivo selecionado: ${file.name}` : "Nenhum arquivo selecionado.";
+  atualizarTipoDocumentoInformado();
+});
+
+els.formaPagamento.addEventListener("change", () => {
+  const selected = els.formaPagamento.options[els.formaPagamento.selectedIndex];
+  els.contaIdSelecionada.value = selected?.dataset?.contaId || "";
+});
+
+els.btnLogin.addEventListener("click", validarUsuario);
+els.btnLogout.addEventListener("click", limparSessao);
+
+els.btnEnviar.addEventListener("click", async () => {
+  if (!usuarioLogado) {
+    alert("Faça login antes de enviar.");
+    return;
+  }
+
+  if (!CONFIG.ENTRADA_RAPIDA_URL) {
+    alert("Configure a URL do webhook de entrada rápida no bloco CONFIG do HTML.");
+    return;
+  }
+
+  const arquivo = els.arquivo.files && els.arquivo.files[0] ? els.arquivo.files[0] : null;
+  const descricao = String(els.descricao.value || "").trim();
+  const valorDespesa = parseValorDespesa(els.valorDespesa.value);
+  const temArquivo = !!arquivo;
+
+  if (!els.dataPagamento.value) {
+    alert("Preencha a data de pagamento.");
+    return;
+  }
+
+  if (!els.formaPagamento.value) {
+    alert("Selecione a forma de pagamento.");
+    return;
+  }
+
+  if (!descricao) {
+    alert("Preencha a descrição.");
+    return;
+  }
+
+  if (!temArquivo && !valorDespesa) {
+    alert("Envie a nota ou preencha o valor da despesa.");
+    return;
+  }
+
+  const selected = els.formaPagamento.options[els.formaPagamento.selectedIndex];
+  const formaPagamentoLabel = selected?.dataset?.label || els.formaPagamento.value || "";
+  const formaPagamentoNormalizada = selected?.dataset?.formaNormalizada || "transferencia";
+  const contaIdSelecionada = selected?.dataset?.contaId || els.contaIdSelecionada.value || "";
+
+  const sessionId = gerarSessionId();
+  const formData = new FormData();
+
+  formData.append("session_id", sessionId);
+  formData.append("empresa_contexto", CONFIG.EMPRESA_CONTEXTO);
+  formData.append("canal", CONFIG.CANAL);
+  formData.append("origem_entrada", CONFIG.CANAL);
+
+  formData.append("user_id", usuarioLogado.user_id || "");
+  formData.append("nome_usuario", usuarioLogado.nome_usuario || "");
+  formData.append("telefone_usuario", usuarioLogado.telefone_usuario_norm || usuarioLogado.telefone_norm || "");
+
+  formData.append("descricao", descricao);
+  formData.append("data_pagamento", els.dataPagamento.value || "");
+
+  // VISUAL: o que o usuário escolheu
+  formData.append("forma_pagamento_label", formaPagamentoLabel);
+
+  // TÉCNICO: valor aceito no banco
+  formData.append("forma_pagamento", formaPagamentoNormalizada);
+
+  formData.append("tipo_documento_informado", temArquivo ? "nota" : "sem_nota");
+  formData.append("conta_id_solicitada", contaIdSelecionada);
+
+  // referência visual
+  formData.append("referencia_pagamento", formaPagamentoLabel);
+
+  formData.append("eh_servico", els.ehServico.checked ? "true" : "false");
+
+  if (valorDespesa !== null) {
+    formData.append("valor_despesa", String(valorDespesa));
+    formData.append("valor_total", String(valorDespesa));
+    formData.append("valor_informado", String(valorDespesa));
+  }
+
+  if (arquivo) {
+    formData.append("arquivo", arquivo);
+  }
+
+  els.btnEnviar.disabled = true;
+  els.envioStatus.textContent = "Enviando lançamento...";
+  els.successBox.classList.add("hidden");
+  els.successBox.textContent = "";
+
+  try {
+    const response = await fetch(CONFIG.ENTRADA_RAPIDA_URL, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.ok === false) {
+      throw new Error(data.message || data.error || `Falha HTTP ${response.status}`);
+    }
+
+    resetFormulario({ manterMensagem: true });
+    els.envioStatus.textContent = "Lançamento enviado com sucesso.";
+    els.successBox.classList.remove("hidden");
+    els.successBox.innerHTML =
+      `<strong>Obrigada.</strong><br>` +
+      `Seu lançamento foi enviado com sucesso e a tela já está pronta para um novo envio.`;
+  } catch (error) {
+    els.envioStatus.textContent = "Falha no envio.";
+    alert("Falha ao enviar.\n\nDetalhe: " + (error.message || error));
+  } finally {
+    els.btnEnviar.disabled = false;
+  }
+});
+
+els.dataPagamento.value = hojeISO();
+els.tipoDocumentoInformado.value = "Sem nota";
+
+if (!carregarSessao()) {
+  showLogin();
+} else {
+  resetFormulario();
+  carregarContas();
+}
+</script>
+</body>
+</html>
